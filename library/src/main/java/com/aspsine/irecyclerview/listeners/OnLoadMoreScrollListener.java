@@ -1,4 +1,4 @@
-package com.aspsine.irecyclerview;
+package com.aspsine.irecyclerview.listeners;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

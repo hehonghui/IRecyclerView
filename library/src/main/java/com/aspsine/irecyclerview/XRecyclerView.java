@@ -18,61 +18,62 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+
+import com.aspsine.irecyclerview.adapter.WrapperAdapter;
+import com.aspsine.irecyclerview.header.RefreshHeaderLayout;
+import com.aspsine.irecyclerview.listeners.OnLoadMoreListener;
+import com.aspsine.irecyclerview.listeners.OnLoadMoreScrollListener;
+import com.aspsine.irecyclerview.listeners.OnRefreshListener;
+import com.aspsine.irecyclerview.anim.SimpleAnimatorListener;
+import com.aspsine.irecyclerview.header.RefreshHeader;
 
 /**
  * Created by aspsine on 16/3/3.
  */
-public class IRecyclerView extends RecyclerView {
-    private static final String TAG = IRecyclerView.class.getSimpleName();
+public class XRecyclerView extends RecyclerView {
+    private static final String TAG = XRecyclerView.class.getSimpleName();
 
     private static final int STATUS_DEFAULT = 0;
-
     private static final int STATUS_SWIPING_TO_REFRESH = 1;
-
     private static final int STATUS_RELEASE_TO_REFRESH = 2;
-
     private static final int STATUS_REFRESHING = 3;
 
     private static final boolean DEBUG = false;
-
     private int mStatus;
-
     private boolean mIsAutoRefreshing;
-
     private boolean mRefreshEnabled;
-
     private boolean mLoadMoreEnabled;
-
     private int mRefreshFinalMoveOffset;
 
     private OnRefreshListener mOnRefreshListener;
-
     private OnLoadMoreListener mOnLoadMoreListener;
-
+    /**
+     * 下拉刷新 Container
+     */
     private RefreshHeaderLayout mRefreshHeaderContainer;
-
+    /**
+     * Footer Container
+     */
     private FrameLayout mLoadMoreFooterContainer;
-
-    private LinearLayout mHeaderViewContainer;
-
-    private LinearLayout mFooterViewContainer;
-
     private View mRefreshHeaderView;
-
     private View mLoadMoreFooterView;
 
-    public IRecyclerView(Context context) {
+    private int mActivePointerId = -1;
+    private int mLastTouchX = 0;
+    private int mLastTouchY = 0;
+
+
+    public XRecyclerView(Context context) {
         this(context, null);
     }
 
-    public IRecyclerView(Context context, @Nullable AttributeSet attrs) {
+    public XRecyclerView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public IRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public XRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IRecyclerView, defStyle, 0);
+        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.XRecyclerView, defStyle, 0);
         @LayoutRes int refreshHeaderLayoutRes = -1;
         @LayoutRes int loadMoreFooterLayoutRes = -1;
         int refreshFinalMoveOffset = -1;
@@ -80,17 +81,16 @@ public class IRecyclerView extends RecyclerView {
         boolean loadMoreEnabled;
 
         try {
-            refreshEnabled = a.getBoolean(R.styleable.IRecyclerView_refreshEnabled, false);
-            loadMoreEnabled = a.getBoolean(R.styleable.IRecyclerView_loadMoreEnabled, false);
-            refreshHeaderLayoutRes = a.getResourceId(R.styleable.IRecyclerView_refreshHeaderLayout, -1);
-            loadMoreFooterLayoutRes = a.getResourceId(R.styleable.IRecyclerView_loadMoreFooterLayout, -1);
-            refreshFinalMoveOffset = a.getDimensionPixelOffset(R.styleable.IRecyclerView_refreshFinalMoveOffset, -1);
+            refreshEnabled = a.getBoolean(R.styleable.XRecyclerView_refreshEnabled, false);
+            loadMoreEnabled = a.getBoolean(R.styleable.XRecyclerView_loadMoreEnabled, false);
+            refreshHeaderLayoutRes = a.getResourceId(R.styleable.XRecyclerView_refreshHeaderLayout, -1);
+            loadMoreFooterLayoutRes = a.getResourceId(R.styleable.XRecyclerView_loadMoreFooterLayout, -1);
+            refreshFinalMoveOffset = a.getDimensionPixelOffset(R.styleable.XRecyclerView_refreshFinalMoveOffset, -1);
         } finally {
             a.recycle();
         }
 
         setRefreshEnabled(refreshEnabled);
-
         setLoadMoreEnabled(loadMoreEnabled);
 
         if (refreshHeaderLayoutRes != -1) {
@@ -156,7 +156,7 @@ public class IRecyclerView extends RecyclerView {
     }
 
     public void setRefreshHeaderView(View refreshHeaderView) {
-        if (!(refreshHeaderView instanceof RefreshTrigger)) {
+        if (!(refreshHeaderView instanceof RefreshHeader)) {
             throw new ClassCastException("Refresh header view must be an implement of RefreshTrigger");
         }
 
@@ -205,46 +205,21 @@ public class IRecyclerView extends RecyclerView {
         return mLoadMoreFooterView;
     }
 
-    public LinearLayout getHeaderContainer() {
-        ensureHeaderViewContainer();
-        return mHeaderViewContainer;
+
+    @Override
+    public void setAdapter(Adapter adapter) {
+        ensureRefreshHeaderContainer();
+        ensureLoadMoreFooterContainer();
+        super.setAdapter(new WrapperAdapter(adapter, mRefreshHeaderContainer, mLoadMoreFooterContainer));
     }
 
-    public LinearLayout getFooterContainer() {
-        ensureFooterViewContainer();
-        return mFooterViewContainer;
-    }
 
-    public void addHeaderView(View headerView) {
-        ensureHeaderViewContainer();
-        mHeaderViewContainer.addView(headerView);
-        Adapter adapter = getAdapter();
-        if (adapter != null) {
-            adapter.notifyItemChanged(1);
-        }
-    }
-
-    public void addFooterView(View footerView) {
-        ensureFooterViewContainer();
-        mFooterViewContainer.addView(footerView);
-        Adapter adapter = getAdapter();
-        if (adapter != null) {
-            adapter.notifyItemChanged(adapter.getItemCount() - 2);
-        }
-    }
-
-    public RecyclerView.Adapter getIAdapter() {
-        final WrapperAdapter wrapperAdapter = (WrapperAdapter) getAdapter();
+    @Override
+    public Adapter getAdapter() {
+        final WrapperAdapter wrapperAdapter = (WrapperAdapter) super.getAdapter();
         return wrapperAdapter.getAdapter();
     }
 
-    public void setIAdapter(Adapter adapter) {
-        ensureRefreshHeaderContainer();
-        ensureHeaderViewContainer();
-        ensureFooterViewContainer();
-        ensureLoadMoreFooterContainer();
-        setAdapter(new WrapperAdapter(adapter, mRefreshHeaderContainer, mHeaderViewContainer, mFooterViewContainer, mLoadMoreFooterContainer));
-    }
 
     private void ensureRefreshHeaderContainer() {
         if (mRefreshHeaderContainer == null) {
@@ -260,22 +235,6 @@ public class IRecyclerView extends RecyclerView {
         }
     }
 
-    private void ensureHeaderViewContainer() {
-        if (mHeaderViewContainer == null) {
-            mHeaderViewContainer = new LinearLayout(getContext());
-            mHeaderViewContainer.setOrientation(LinearLayout.VERTICAL);
-            mHeaderViewContainer.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
-    }
-
-    private void ensureFooterViewContainer() {
-        if (mFooterViewContainer == null) {
-            mFooterViewContainer = new LinearLayout(getContext());
-            mFooterViewContainer.setOrientation(LinearLayout.VERTICAL);
-            mFooterViewContainer.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
-    }
-
     private void removeRefreshHeaderView() {
         if (mRefreshHeaderContainer != null) {
             mRefreshHeaderContainer.removeView(mRefreshHeaderView);
@@ -288,9 +247,6 @@ public class IRecyclerView extends RecyclerView {
         }
     }
 
-    private int mActivePointerId = -1;
-    private int mLastTouchX = 0;
-    private int mLastTouchY = 0;
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
@@ -609,51 +565,51 @@ public class IRecyclerView extends RecyclerView {
         }
     };
 
-    private RefreshTrigger mRefreshTrigger = new RefreshTrigger() {
+    private RefreshHeader mRefreshTrigger = new RefreshHeader() {
         @Override
         public void onStart(boolean automatic, int headerHeight, int finalHeight) {
-            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshTrigger) {
-                RefreshTrigger trigger = (RefreshTrigger) mRefreshHeaderView;
+            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshHeader) {
+                RefreshHeader trigger = (RefreshHeader) mRefreshHeaderView;
                 trigger.onStart(automatic, headerHeight, finalHeight);
             }
         }
 
         @Override
         public void onMove(boolean finished, boolean automatic, int moved) {
-            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshTrigger) {
-                RefreshTrigger trigger = (RefreshTrigger) mRefreshHeaderView;
+            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshHeader) {
+                RefreshHeader trigger = (RefreshHeader) mRefreshHeaderView;
                 trigger.onMove(finished, automatic, moved);
             }
         }
 
         @Override
         public void onRefresh() {
-            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshTrigger) {
-                RefreshTrigger trigger = (RefreshTrigger) mRefreshHeaderView;
+            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshHeader) {
+                RefreshHeader trigger = (RefreshHeader) mRefreshHeaderView;
                 trigger.onRefresh();
             }
         }
 
         @Override
         public void onRelease() {
-            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshTrigger) {
-                RefreshTrigger trigger = (RefreshTrigger) mRefreshHeaderView;
+            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshHeader) {
+                RefreshHeader trigger = (RefreshHeader) mRefreshHeaderView;
                 trigger.onRelease();
             }
         }
 
         @Override
         public void onComplete() {
-            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshTrigger) {
-                RefreshTrigger trigger = (RefreshTrigger) mRefreshHeaderView;
+            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshHeader) {
+                RefreshHeader trigger = (RefreshHeader) mRefreshHeaderView;
                 trigger.onComplete();
             }
         }
 
         @Override
         public void onReset() {
-            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshTrigger) {
-                RefreshTrigger trigger = (RefreshTrigger) mRefreshHeaderView;
+            if (mRefreshHeaderView != null && mRefreshHeaderView instanceof RefreshHeader) {
+                RefreshHeader trigger = (RefreshHeader) mRefreshHeaderView;
                 trigger.onReset();
             }
         }

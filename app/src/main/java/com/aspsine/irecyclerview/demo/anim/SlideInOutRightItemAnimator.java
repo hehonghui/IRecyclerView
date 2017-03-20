@@ -5,10 +5,11 @@ import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.aspsine.irecyclerview.anim.BaseItemAnimator;
+
 /**
  * Created by mrsimple on 20/3/17.
  */
-
 public class SlideInOutRightItemAnimator extends BaseItemAnimator {
 
     private RecyclerView mRecyclerView;

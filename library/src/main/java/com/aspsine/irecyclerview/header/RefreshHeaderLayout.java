@@ -1,10 +1,9 @@
-package com.aspsine.irecyclerview;
+package com.aspsine.irecyclerview.header;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 
 /**
  * Created by aspsine on 16/3/7.

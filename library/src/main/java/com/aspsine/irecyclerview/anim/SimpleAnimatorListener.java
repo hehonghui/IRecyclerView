@@ -1,4 +1,4 @@
-package com.aspsine.irecyclerview;
+package com.aspsine.irecyclerview.anim;
 
 import android.animation.Animator;
 

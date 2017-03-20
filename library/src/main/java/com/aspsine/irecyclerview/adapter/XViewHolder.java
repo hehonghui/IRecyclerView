@@ -1,4 +1,4 @@
-package com.aspsine.irecyclerview;
+package com.aspsine.irecyclerview.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -6,9 +6,9 @@ import android.view.View;
 /**
  * Created by aspsine on 16/3/12.
  */
-public abstract class IViewHolder extends RecyclerView.ViewHolder {
+public abstract class XViewHolder extends RecyclerView.ViewHolder {
 
-    public IViewHolder(View itemView) {
+    public XViewHolder(View itemView) {
         super(itemView);
     }
 

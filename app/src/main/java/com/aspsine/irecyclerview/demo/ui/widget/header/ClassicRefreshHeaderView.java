@@ -9,13 +9,13 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.aspsine.irecyclerview.RefreshTrigger;
+import com.aspsine.irecyclerview.header.RefreshHeader;
 import com.aspsine.irecyclerview.demo.R;
 
 /**
  * Created by aspsine on 16/3/14.
  */
-public class ClassicRefreshHeaderView extends RelativeLayout implements RefreshTrigger {
+public class ClassicRefreshHeaderView extends RelativeLayout implements RefreshHeader {
     private ImageView ivArrow;
 
     private ImageView ivSuccess;

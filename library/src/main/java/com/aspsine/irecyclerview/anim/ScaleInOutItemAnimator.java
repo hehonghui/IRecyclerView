@@ -1,4 +1,4 @@
-package com.aspsine.irecyclerview.demo.anim;
+package com.aspsine.irecyclerview.anim;
 
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;

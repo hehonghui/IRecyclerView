@@ -4,12 +4,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.aspsine.irecyclerview.IViewHolder;
+import com.aspsine.irecyclerview.adapter.XViewHolder;
 import com.aspsine.irecyclerview.demo.R;
 import com.aspsine.irecyclerview.demo.model.Image;
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Created by aspsine on 16/4/5.
  */
-public class ImageAdapter extends RecyclerView.Adapter<IViewHolder> {
+public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
 
     private List<Image> mImages;
 
@@ -25,6 +24,10 @@ public class ImageAdapter extends RecyclerView.Adapter<IViewHolder> {
 
     public ImageAdapter() {
         mImages = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            mImages.add(new Image("name- " + i, "title - " + i)) ;
+        }
     }
 
     public void setOnItemClickListener(OnItemClickListener<Image> listener) {
@@ -58,9 +61,8 @@ public class ImageAdapter extends RecyclerView.Adapter<IViewHolder> {
     }
 
     @Override
-    public IViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ImageView imageView = (ImageView) LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_image_item, parent, false);
-
+    public XViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View imageView =  LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_image_item, parent, false);
         final ViewHolder holder = new ViewHolder(imageView);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +70,7 @@ public class ImageAdapter extends RecyclerView.Adapter<IViewHolder> {
                 /**
                  * Note:
                  * in order to get the right position, you must use the method with i- prefix in
-                 * {@link IViewHolder} eg:
+                 * {@link XViewHolder} eg:
                  * {@code IViewHolder.getIPosition()}
                  * {@code IViewHolder.getILayoutPosition()}
                  * {@code IViewHolder.getIAdapterPosition()}
@@ -84,10 +86,14 @@ public class ImageAdapter extends RecyclerView.Adapter<IViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(IViewHolder holder, int position) {
-        ImageView imageView = (ImageView) holder.itemView;
-        Image image = mImages.get(position);
-        Glide.with(imageView.getContext()).load(image.image).dontAnimate().into(imageView);
+    public void onBindViewHolder(XViewHolder holder, int position) {
+//        ImageView imageView = (ImageView) holder.itemView;
+//        Image image = mImages.get(position);
+
+        TextView textView = (TextView) holder.itemView.findViewById(R.id.tv) ;
+        textView.setText("url : " + mImages.get(position).title);
+
+//        Glide.with(imageView.getContext()).load(image.image).dontAnimate().into(imageView);
     }
 
     @Override
@@ -95,10 +101,12 @@ public class ImageAdapter extends RecyclerView.Adapter<IViewHolder> {
         return mImages.size();
     }
 
-    static class ViewHolder extends IViewHolder {
+    static class ViewHolder extends XViewHolder {
+        TextView textView ;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            textView = (TextView) itemView.findViewById(R.id.tv);
         }
     }
 }

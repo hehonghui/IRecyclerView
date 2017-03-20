@@ -6,13 +6,13 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.aspsine.irecyclerview.RefreshTrigger;
+import com.aspsine.irecyclerview.header.RefreshHeader;
 import com.aspsine.irecyclerview.demo.R;
 
 /**
  * Created by aspsine on 16/4/7.
  */
-public class BatVsSupperHeaderView extends FrameLayout implements RefreshTrigger {
+public class BatVsSupperHeaderView extends FrameLayout implements RefreshHeader {
 
     private ImageView ivBatMan;
 
