@@ -1,6 +1,6 @@
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-IRecyclerView-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/3403)
-# IRecyclerView
-IRecyclerView is a custom RecyclerView that supports pull-to-refresh, pull-to-loadmore, customize refresh header and loadmore footer, add header views and footer views.
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-XRecyclerView-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/3403)
+# XRecyclerView
+XRecyclerView is a custom RecyclerView that supports pull-to-refresh, pull-to-loadmore, customize refresh header and loadmore footer, add header views and footer views.
 
 ### Features:
 - pull-to-refresh
@@ -12,20 +12,20 @@ IRecyclerView is a custom RecyclerView that supports pull-to-refresh, pull-to-lo
 - support vertical LinearLayoutManager/GridLayoutManager/StaggeredGridLayoutManager
 
 ### Demo
-[Download](https://github.com/Aspsine/IRecyclerView/blob/master/art/demo.apk?raw=true)
+[Download](https://github.com/Aspsine/irecyclerView/blob/master/art/demo.apk?raw=true)
 
 ### Demo ScreenShot
 - Bat Man vs Super Man Refresh header
 
-![Bat Man vs Super Man](https://github.com/Aspsine/IRecyclerView/raw/master/art/bat_vs_supper_header.gif)
+![Bat Man vs Super Man](https://github.com/Aspsine/irecyclerView/raw/master/art/bat_vs_supper_header.gif)
 
 - Classic Refresh header
 
-![classic](https://github.com/Aspsine/IRecyclerView/raw/master/art/class_header.gif)
+![classic](https://github.com/Aspsine/irecyclerView/raw/master/art/class_header.gif)
 
 - Load more footer
 
-![load more](https://github.com/Aspsine/IRecyclerView/raw/master/art/load_more.gif)
+![load more](https://github.com/Aspsine/irecyclerView/raw/master/art/load_more.gif)
 
 ### How to use
 Step 1. Add the JitPack repository to your build file. Add it in your root build.gradle at the end of repositories:
@@ -37,51 +37,45 @@ allprojects {
     }
 }
 ```
-Step 2. Add the dependency
+Step 2. Add the dependency (local)
+
 ```groovy
 dependencies {
-    compile 'com.github.Aspsine:IRecyclerView:0.0.5'
+    compile (':project')
 }
 ```
 Step 3. Edit your Activity/Fragment content view layout
 ```xml
-<com.aspsine.irecyclerview.IRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.aspsine.irecyclerView.XRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/iRecyclerView"
+    android:id="@+id/recyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:loadMoreEnabled="true"
-    app:loadMoreFooterLayout="@layout/layout_irecyclerview_load_more_footer"
+    app:loadMoreFooterLayout="@layout/layout_XRecyclerView_load_more_footer"
     app:refreshEnabled="true"
-    app:refreshHeaderLayout="@layout/layout_irecyclerview_refresh_header"/>
+    app:refreshHeaderLayout="@layout/layout_XRecyclerView_refresh_header"/>
 ```
 Then Editor your Activity/Fragment
 
 ```java
-IRecyclerView iRecyclerView = (IRecyclerView) findViewById(R.id.iRecyclerView);
-
-iRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+XRecyclerView mRecyclerView = (XRecyclerView) findViewById(R.id. recyclerView);
+mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 // an custom load more footer view, you can customize it yourself.
-LoadMoreFooterView loadMoreFooterView = (LoadMoreFooterView) iRecyclerView.getLoadMoreFooterView();
-
-// you can also add header and footer like this
-// note: header and refresh header are different, footer and load more footer are different too. 
-iRecyclerView.addHeaderView(headerView);
-iRecyclerView.addFooterView(footerView);
+LoadMoreFooterView loadMoreFooterView = (LoadMoreFooterView) mRecyclerView.getLoadMoreFooterView();
 
 // adapter
 ImageAdapter mAdapter = new ImageAdapter();
-// note: here use setIAdapter(...) method not setAdapter(...)
-iRecyclerView.setIAdapter(mAdapter);
+mRecyclerView.setAdapter(mAdapter);
 
-iRecyclerView.setOnRefreshListener(new OnRefreshListener() {
+mRecyclerView.setOnRefreshListener(new OnRefreshListener() {
     @Override
     public void onRefresh() {
     
     }
 });
-iRecyclerView.setOnLoadMoreListener(new OnLoadMoreListener() {
+mRecyclerView.setOnLoadMoreListener(new OnLoadMoreListener() {
     @Override
     public void onLoadMore(View loadMoreView) {
 
@@ -89,15 +83,15 @@ iRecyclerView.setOnLoadMoreListener(new OnLoadMoreListener() {
 });
 
 // set auto refreshing
-iRecyclerView.post(new Runnable() {
+mRecyclerView.post(new Runnable() {
     @Override
    public void run() {
-       iRecyclerView.setRefreshing(true);
+       XRecyclerView.setRefreshing(true);
    }
 });
 
 // stop refreshing
-iRecyclerView.setRefreshing(false);
+mRecyclerView.setRefreshing(false);
 ```
 
 Please check out the demo code for more details .
