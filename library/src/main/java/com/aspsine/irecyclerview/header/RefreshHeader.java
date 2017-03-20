@@ -16,4 +16,6 @@ public interface RefreshHeader {
     void onComplete();
 
     void onReset();
+
+    int getMeasuredHeight();
 }

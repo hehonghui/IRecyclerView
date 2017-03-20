@@ -75,7 +75,7 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
                  * {@code IViewHolder.getILayoutPosition()}
                  * {@code IViewHolder.getIAdapterPosition()}
                  */
-                final int position = holder.getIAdapterPosition();
+                final int position = holder.getRealAdapterPosition();
                 final Image image = mImages.get(position);
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onItemClick(position, image, v);
@@ -87,13 +87,8 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
 
     @Override
     public void onBindViewHolder(XViewHolder holder, int position) {
-//        ImageView imageView = (ImageView) holder.itemView;
-//        Image image = mImages.get(position);
-
         TextView textView = (TextView) holder.itemView.findViewById(R.id.tv) ;
         textView.setText("url : " + mImages.get(position).title);
-
-//        Glide.with(imageView.getContext()).load(image.image).dontAnimate().into(imageView);
     }
 
     @Override
@@ -101,6 +96,9 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
         return mImages.size();
     }
 
+    /**
+     *
+     */
     static class ViewHolder extends XViewHolder {
         TextView textView ;
 

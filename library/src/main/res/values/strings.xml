@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">IRecyclerView</string>
+    <string name="status_default">status_default</string>
+    <string name="status_swiping_to_refresh">status_swiping_to_refresh</string>
+    <string name="status_release_to_refresh">status_release_to_refresh</string>
+    <string name="status_refreshing">status_refreshing</string>
+    <string name="status_illegal">status_illegal!</string>
 </resources>

@@ -89,16 +89,16 @@ public class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }  else if (position == mAdapter.getItemCount() + getFooterCount()) {
             return LOAD_MORE_FOOTER;
         }
-        throw new IllegalArgumentException("Wrong type! Position = " + position);
+        throw new IllegalArgumentException("Wrong type in XRecyclerView ! Position = " + position);
     }
 
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == REFRESH_HEADER) {
-            return new HeaderViewHolder(mRefreshHeaderContainer);
+            return new SimpleViewHolder(mRefreshHeaderContainer);
         }else if (viewType == LOAD_MORE_FOOTER) {
-            return new FooterViewHolder(mLoadMoreFooterContainer);
+            return new SimpleViewHolder(mLoadMoreFooterContainer);
         } else {
             return mAdapter.onCreateViewHolder(parent, viewType);
         }
@@ -159,12 +159,12 @@ public class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
-    private int getHeaderCount() {
+    protected int getHeaderCount() {
         return 1;
     }
 
 
-    private int getFooterCount() {
+    protected int getFooterCount() {
         return 1;
     }
 
@@ -172,20 +172,9 @@ public class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     /**
      *
      */
-    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+    static class SimpleViewHolder extends RecyclerView.ViewHolder {
 
-        public HeaderViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
-
-
-    /**
-     *
-     */
-    static class FooterViewHolder extends RecyclerView.ViewHolder {
-
-        public FooterViewHolder(View itemView) {
+        public SimpleViewHolder(View itemView) {
             super(itemView);
         }
     }

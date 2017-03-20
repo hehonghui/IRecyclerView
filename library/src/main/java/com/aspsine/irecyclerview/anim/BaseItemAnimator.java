@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * see : https://github.com/gabrielemariotti/RecyclerViewItemAnimators
  * Created by mrsimple on 20/3/17.
  */
-
 public abstract class BaseItemAnimator extends SimpleItemAnimator {
 
     //------------------------------------------------------------
