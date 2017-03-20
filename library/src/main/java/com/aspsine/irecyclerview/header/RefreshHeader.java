@@ -18,4 +18,6 @@ public interface RefreshHeader {
     void onReset();
 
     int getMeasuredHeight();
+
+    void onNeedToRelease();
 }

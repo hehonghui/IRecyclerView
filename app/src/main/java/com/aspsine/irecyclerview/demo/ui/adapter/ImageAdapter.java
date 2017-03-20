@@ -43,11 +43,12 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
         int positionStart = mImages.size();
         int itemCount = images.size();
         mImages.addAll(images);
-        if (positionStart > 0 && itemCount > 0) {
-            notifyItemRangeInserted(positionStart, itemCount);
-        } else {
-            notifyDataSetChanged();
-        }
+//        if (positionStart > 0 && itemCount > 0) {
+//            notifyItemRangeInserted(positionStart, itemCount);
+//        } else {
+//            notifyDataSetChanged();
+//        }
+        notifyDataSetChanged();
     }
 
     public void remove(int position) {

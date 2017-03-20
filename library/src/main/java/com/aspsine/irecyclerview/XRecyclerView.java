@@ -328,6 +328,7 @@ public class XRecyclerView extends RecyclerView {
                     if (mStatus == STATUS_SWIPING_TO_REFRESH || mStatus == STATUS_RELEASE_TO_REFRESH) {
                         if (refreshHeaderContainerHeight >= refreshHeaderViewHeight) {
                             setStatus(STATUS_RELEASE_TO_REFRESH);
+                            mRefreshHeaderView.onNeedToRelease();
                         } else {
                             setStatus(STATUS_SWIPING_TO_REFRESH);
                         }
