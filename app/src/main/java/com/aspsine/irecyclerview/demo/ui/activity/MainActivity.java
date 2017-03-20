@@ -14,6 +14,7 @@ import com.aspsine.irecyclerview.IRecyclerView;
 import com.aspsine.irecyclerview.OnLoadMoreListener;
 import com.aspsine.irecyclerview.OnRefreshListener;
 import com.aspsine.irecyclerview.demo.R;
+import com.aspsine.irecyclerview.demo.anim.SlideInOutRightItemAnimator;
 import com.aspsine.irecyclerview.demo.model.Image;
 import com.aspsine.irecyclerview.demo.network.NetworkAPI;
 import com.aspsine.irecyclerview.demo.ui.adapter.ImageAdapter;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         setContentView(R.layout.activity_main);
         iRecyclerView = (IRecyclerView) findViewById(R.id.iRecyclerView);
         iRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        iRecyclerView.setItemAnimator(new SlideInOutRightItemAnimator(iRecyclerView));
 
         bannerView = (BannerView) LayoutInflater.from(this).inflate(R.layout.layout_banner_view, iRecyclerView.getHeaderContainer(), false);
         iRecyclerView.addHeaderView(bannerView);
