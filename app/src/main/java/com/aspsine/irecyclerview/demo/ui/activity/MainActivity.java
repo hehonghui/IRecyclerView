@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.aspsine.irecyclerview.XRecyclerView;
 import com.aspsine.irecyclerview.demo.R;
+import com.aspsine.irecyclerview.demo.anim.SlideInOutRightItemAnimator;
 import com.aspsine.irecyclerview.demo.model.Image;
 import com.aspsine.irecyclerview.demo.ui.adapter.ImageAdapter;
 import com.aspsine.irecyclerview.demo.ui.adapter.OnItemClickListener;
@@ -37,8 +38,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         setContentView(R.layout.activity_main);
         mRecyclerView = (XRecyclerView) findViewById(R.id.iRecyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        mRecyclerView.setItemAnimator(new ScaleInOutItemAnimator());
-        mRecyclerView.setItemAnimator(null);
+        mRecyclerView.setItemAnimator(new SlideInOutRightItemAnimator(mRecyclerView));
+//        mRecyclerView.setItemAnimator(null);
 
         mRecyclerView.setRefreshHeaderView(new NewsDogHeaderView(this));
         mLoadMoreView = new LoadMoreFooterView(this) ;

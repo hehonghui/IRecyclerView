@@ -48,7 +48,7 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
         if (images.size() == 0) {
             return;
         }
-        mImages.addAll(images);
+        mImages.addAll(0,images);
         notifyItemRangeInserted(0, images.size());
     }
 
