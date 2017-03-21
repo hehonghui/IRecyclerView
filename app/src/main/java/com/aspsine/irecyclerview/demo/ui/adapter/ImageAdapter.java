@@ -26,7 +26,7 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
         mImages = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
-            mImages.add(new Image("name- " + i, "title - " + i)) ;
+            mImages.add(new Image("name- " + i, "title - " + i));
         }
     }
 
@@ -39,16 +39,32 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
         append(images);
     }
 
+
+    /**
+     *
+     * @param images
+     */
+    public void addToHead(List<Image> images) {
+        if (images.size() == 0) {
+            return;
+        }
+        mImages.addAll(images);
+        notifyItemRangeInserted(0, images.size());
+    }
+
+    /**
+     *
+     * @param images
+     */
     public void append(List<Image> images) {
         int positionStart = mImages.size();
         int itemCount = images.size();
         mImages.addAll(images);
-//        if (positionStart > 0 && itemCount > 0) {
-//            notifyItemRangeInserted(positionStart, itemCount);
-//        } else {
-//            notifyDataSetChanged();
-//        }
-        notifyDataSetChanged();
+        if (positionStart > 0 && itemCount > 0) {
+            notifyItemRangeInserted(positionStart, itemCount);
+        } else {
+            notifyDataSetChanged();
+        }
     }
 
     public void remove(int position) {
@@ -56,14 +72,14 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
         notifyItemRemoved(position);
     }
 
-    public void clear(){
+    public void clear() {
         mImages.clear();
         notifyDataSetChanged();
     }
 
     @Override
     public XViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View imageView =  LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_image_item, parent, false);
+        View imageView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_image_item, parent, false);
         final ViewHolder holder = new ViewHolder(imageView);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +104,7 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
 
     @Override
     public void onBindViewHolder(XViewHolder holder, int position) {
-        TextView textView = (TextView) holder.itemView.findViewById(R.id.tv) ;
+        TextView textView = (TextView) holder.itemView.findViewById(R.id.tv);
         textView.setText("url : " + mImages.get(position).title);
     }
 
@@ -101,7 +117,7 @@ public class ImageAdapter extends RecyclerView.Adapter<XViewHolder> {
      *
      */
     static class ViewHolder extends XViewHolder {
-        TextView textView ;
+        TextView textView;
 
         public ViewHolder(View itemView) {
             super(itemView);

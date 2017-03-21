@@ -1,6 +1,8 @@
 package com.aspsine.irecyclerview.demo.ui.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
@@ -15,7 +17,7 @@ import com.aspsine.irecyclerview.demo.model.Image;
 import com.aspsine.irecyclerview.demo.ui.adapter.ImageAdapter;
 import com.aspsine.irecyclerview.demo.ui.adapter.OnItemClickListener;
 import com.aspsine.irecyclerview.demo.ui.widget.footer.LoadMoreFooterView;
-import com.aspsine.irecyclerview.demo.ui.widget.header.BatVsSupperHeaderView;
+import com.aspsine.irecyclerview.demo.ui.widget.header.NewsDogHeaderView;
 import com.aspsine.irecyclerview.demo.ui.widget.header.ClassicRefreshHeaderView;
 import com.aspsine.irecyclerview.demo.utils.DensityUtils;
 import com.aspsine.irecyclerview.demo.utils.ListUtils;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     private ImageAdapter mAdapter;
 
     private int mPage;
+    Handler mHandler = new Handler(Looper.getMainLooper()) ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +45,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         setContentView(R.layout.activity_main);
         mRecyclerView = (XRecyclerView) findViewById(R.id.iRecyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setItemAnimator(null);
+//        mRecyclerView.setItemAnimator(new ScaleInOutItemAnimator());
 
+        // setup footer view
         loadMoreFooterView = (LoadMoreFooterView) mRecyclerView.getLoadMoreFooterView();
 
         mAdapter = new ImageAdapter();
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         mAdapter.setOnItemClickListener(this);
 
-        mRecyclerView.post(new Runnable() {
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
                 mRecyclerView.setRefreshing(true);
@@ -98,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     }
 
     private void toggleRefreshHeader() {
-        if (mRecyclerView.getRefreshHeaderView() instanceof BatVsSupperHeaderView) {
+        if (mRecyclerView.getRefreshHeaderView() instanceof NewsDogHeaderView) {
             ClassicRefreshHeaderView classicRefreshHeaderView = new ClassicRefreshHeaderView(this);
             classicRefreshHeaderView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams
                     .MATCH_PARENT, DensityUtils.dip2px(this, 80)));
@@ -115,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     private void refresh() {
         mPage = 1;
-        loadMoreFooterView.postDelayed(new Runnable() {
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 List<Image> images = mockImages();
@@ -124,10 +128,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     mAdapter.clear();
                 } else {
                     mPage = 2;
-                    mAdapter.append(images);
+                    mAdapter.addToHead(images);
                 }
             }
-        }, 1000);
+        }, 3000);
     }
 
     private List<Image> mockImages() {
@@ -139,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     }
 
     private void loadMore() {
-        loadMoreFooterView.postDelayed(new Runnable() {
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 final List<Image> images = mockImages();
@@ -149,19 +153,16 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     /**
                      * FIXME here we post delay to see more animation, you don't need to do this.
                      */
-                    loadMoreFooterView.postDelayed(new Runnable() {
+                    mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             mPage++;
                             loadMoreFooterView.setStatus(LoadMoreFooterView.Status.GONE);
                             mAdapter.append(images);
                         }
-                    }, 2000);
+                    }, 500);
                 }
-                //
-                //                loadMoreFooterView.setStatus(LoadMoreFooterView.Status.ERROR);
-                //                Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
             }
-        }, 1000);
+        }, 3000);
     }
 }

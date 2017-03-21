@@ -3,21 +3,6 @@
        android:layout_width="match_parent"
        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/ivBatMan"
-        android:layout_width="69dp"
-        android:layout_height="120dp"
-        android:layout_gravity="left"
-        android:background="@mipmap/batman"
-        android:scaleType="centerInside"/>
-
-    <ImageView
-        android:id="@+id/ivSuperMan"
-        android:layout_width="74dp"
-        android:layout_height="120dp"
-        android:layout_gravity="right"
-        android:background="@mipmap/superman"/>
-
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,8 +10,8 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="122dp"
-            android:layout_height="60dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/refersh_bg"/>
 
@@ -36,9 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/imageView"
             android:layout_centerHorizontal="true"
+            android:textColor="#000000"
             android:layout_marginTop="5dp"/>
-
     </RelativeLayout>
-
 
 </merge>

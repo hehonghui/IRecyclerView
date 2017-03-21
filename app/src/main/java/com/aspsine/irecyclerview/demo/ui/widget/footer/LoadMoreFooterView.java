@@ -7,19 +7,16 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.aspsine.irecyclerview.demo.R;
+import com.aspsine.irecyclerview.footer.FooterView;
 
 /**
  * Created by aspsine on 16/3/14.
  */
-public class LoadMoreFooterView extends FrameLayout {
+public class LoadMoreFooterView extends FrameLayout implements FooterView {
 
     private Status mStatus;
 
     private View mLoadingView;
-
-    private View mErrorView;
-
-    private View mTheEndView;
 
     private OnRetryListener mOnRetryListener;
 
@@ -34,20 +31,7 @@ public class LoadMoreFooterView extends FrameLayout {
     public LoadMoreFooterView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.layout_irecyclerview_load_more_footer_view, this, true);
-
         mLoadingView = findViewById(R.id.loadingView);
-        mErrorView = findViewById(R.id.errorView);
-        mTheEndView = findViewById(R.id.theEndView);
-
-        mErrorView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnRetryListener != null) {
-                    mOnRetryListener.onRetry(LoadMoreFooterView.this);
-                }
-            }
-        });
-
         setStatus(Status.GONE);
     }
 
@@ -59,45 +43,40 @@ public class LoadMoreFooterView extends FrameLayout {
         return mStatus;
     }
 
+    @Override
     public void setStatus(Status status) {
         this.mStatus = status;
         change();
-    }
-
-    public boolean canLoadMore() {
-        return mStatus == Status.GONE || mStatus == Status.ERROR;
     }
 
     private void change() {
         switch (mStatus) {
             case GONE:
                 mLoadingView.setVisibility(GONE);
-                mErrorView.setVisibility(GONE);
-                mTheEndView.setVisibility(GONE);
                 break;
 
             case LOADING:
                 mLoadingView.setVisibility(VISIBLE);
-                mErrorView.setVisibility(GONE);
-                mTheEndView.setVisibility(GONE);
                 break;
 
             case ERROR:
                 mLoadingView.setVisibility(GONE);
-                mErrorView.setVisibility(VISIBLE);
-                mTheEndView.setVisibility(GONE);
                 break;
 
             case THE_END:
                 mLoadingView.setVisibility(GONE);
-                mErrorView.setVisibility(GONE);
-                mTheEndView.setVisibility(VISIBLE);
                 break;
         }
     }
 
-    public enum Status {
-        GONE, LOADING, ERROR, THE_END
+    @Override
+    public boolean isLoading() {
+        return mLoadingView.isShown();
+    }
+
+    @Override
+    public boolean canLoadMore() {
+        return mStatus == Status.GONE || mStatus == Status.ERROR;
     }
 
     public interface OnRetryListener {

@@ -124,6 +124,10 @@ public class ClassicRefreshHeaderView extends RelativeLayout implements RefreshH
 
     @Override
     public void onNeedToRelease() {
+    }
 
+    @Override
+    public boolean isRefreshing() {
+        return  progressBar.getVisibility() == VISIBLE;
     }
 }

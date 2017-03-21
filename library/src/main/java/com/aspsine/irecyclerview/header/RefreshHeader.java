@@ -20,4 +20,5 @@ public interface RefreshHeader {
     int getMeasuredHeight();
 
     void onNeedToRelease();
+    boolean isRefreshing() ;
 }

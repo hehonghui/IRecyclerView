@@ -28,11 +28,13 @@ public abstract class OnLoadMoreScrollListener extends RecyclerView.OnScrollList
     }
 
     public boolean canTriggerLoadMore(RecyclerView recyclerView) {
+        // the last View is load more
         View lastChild = recyclerView.getChildAt(recyclerView.getChildCount() - 1);
-        int position = recyclerView.getChildLayoutPosition(lastChild);
+        // the last position of real data
+        int position = recyclerView.getChildLayoutPosition(lastChild) - 1;
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-        int totalItemCount = layoutManager.getItemCount();
-        return totalItemCount - 1 == position;
+        int totalCount = layoutManager.getChildCount();
+        return totalCount == position;
     }
 
     public abstract void onLoadMore(RecyclerView recyclerView);
