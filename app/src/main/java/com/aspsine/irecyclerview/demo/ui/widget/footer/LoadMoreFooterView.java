@@ -15,10 +15,8 @@ import com.aspsine.irecyclerview.footer.FooterView;
 public class LoadMoreFooterView extends FrameLayout implements FooterView {
 
     private Status mStatus;
-
     private View mLoadingView;
 
-    private OnRetryListener mOnRetryListener;
 
     public LoadMoreFooterView(Context context) {
         this(context, null);
@@ -30,17 +28,9 @@ public class LoadMoreFooterView extends FrameLayout implements FooterView {
 
     public LoadMoreFooterView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        LayoutInflater.from(context).inflate(R.layout.layout_irecyclerview_load_more_footer_view, this, true);
+        LayoutInflater.from(context).inflate(R.layout.load_more_footer_layout, this, true);
         mLoadingView = findViewById(R.id.loadingView);
         setStatus(Status.GONE);
-    }
-
-    public void setOnRetryListener(OnRetryListener listener) {
-        this.mOnRetryListener = listener;
-    }
-
-    public Status getStatus() {
-        return mStatus;
     }
 
     @Override
@@ -65,6 +55,7 @@ public class LoadMoreFooterView extends FrameLayout implements FooterView {
 
             case THE_END:
                 mLoadingView.setVisibility(GONE);
+                // // TODO: 21/3/17 no more news
                 break;
         }
     }
@@ -78,9 +69,4 @@ public class LoadMoreFooterView extends FrameLayout implements FooterView {
     public boolean canLoadMore() {
         return mStatus == Status.GONE || mStatus == Status.ERROR;
     }
-
-    public interface OnRetryListener {
-        void onRetry(LoadMoreFooterView view);
-    }
-
 }

@@ -25,7 +25,6 @@ import com.aspsine.irecyclerview.footer.FooterView;
 import com.aspsine.irecyclerview.header.RefreshHeader;
 import com.aspsine.irecyclerview.header.RefreshHeaderLayout;
 import com.aspsine.irecyclerview.listeners.OnLoadMoreListener;
-import com.aspsine.irecyclerview.listeners.OnLoadMoreScrollListener;
 import com.aspsine.irecyclerview.listeners.OnRefreshListener;
 
 /**
@@ -210,12 +209,14 @@ public class XRecyclerView extends RecyclerView {
         return mLoadMoreFooterView;
     }
 
+    WrapperAdapter mWrapperAdapter;
 
     @Override
     public void setAdapter(Adapter adapter) {
         ensureRefreshHeaderContainer();
         ensureLoadMoreFooterContainer();
-        super.setAdapter(new WrapperAdapter(adapter, mRefreshHeaderContainer, mLoadMoreFooterContainer));
+        mWrapperAdapter = new WrapperAdapter(adapter, mRefreshHeaderContainer, mLoadMoreFooterContainer) ;
+        super.setAdapter(mWrapperAdapter);
     }
 
 
@@ -262,6 +263,7 @@ public class XRecyclerView extends RecyclerView {
                 mActivePointerId = MotionEventCompat.getPointerId(e, 0);
                 mLastTouchX = (int) (MotionEventCompat.getX(e, actionIndex) + 0.5f);
                 mLastTouchY = (int) (MotionEventCompat.getY(e, actionIndex) + 0.5f);
+                mDownY = mLastTouchY;
             }
             break;
 
@@ -291,7 +293,6 @@ public class XRecyclerView extends RecyclerView {
                 mActivePointerId = MotionEventCompat.getPointerId(e, 0);
                 mLastTouchX = getMotionEventX(e, index);
                 mLastTouchY = getMotionEventY(e, index);
-                mDownY = mLastTouchY;
             }
             break;
 
@@ -361,6 +362,10 @@ public class XRecyclerView extends RecyclerView {
 
             case MotionEvent.ACTION_UP: {
                 onFingerUpStartAnimating();
+                // touch to load more
+                if ( canLoadMore() ) {
+                    doLoadMore();
+                }
             }
             break;
 
@@ -370,6 +375,15 @@ public class XRecyclerView extends RecyclerView {
             break;
         }
         return super.onTouchEvent(e);
+    }
+
+    private boolean canLoadMore() {
+        boolean notRefresh = isNotRefreshing() ;
+        boolean notLoading = isLoadMoreNotRunning();
+        boolean canLoadMore = isBottom(this) ;
+        return notRefresh && notLoading
+                && mStatus == STATUS_DEFAULT
+                && isFlingUp() && canLoadMore && isLoadMoreEnabled ;
     }
 
     private boolean isFingerDragging() {
@@ -414,41 +428,8 @@ public class XRecyclerView extends RecyclerView {
         } else if (mStatus == STATUS_SWIPING_TO_REFRESH) {
             startScrollSwipingToRefreshStatusToDefaultStatus();
         }
-//
-//        if (!isNotRefreshing() && mLastTouchY - mDownY > 30 && isBottom(getLastItemPosition()) && isLoadMoreEnabled) {
-//            doLoadMore();
-//        }
     }
 
-//
-//    int getLastItemPosition() {
-//        LayoutManager layoutManager = getLayoutManager();
-//        int lastVisibleItemPosition;
-//        if (layoutManager instanceof GridLayoutManager) {
-//            lastVisibleItemPosition = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
-//        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-//            int[] into = new int[((StaggeredGridLayoutManager) layoutManager).getSpanCount()];
-//            ((StaggeredGridLayoutManager) layoutManager).findLastVisibleItemPositions(into);
-//            lastVisibleItemPosition = findMax(into);
-//        } else {
-//            lastVisibleItemPosition = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
-//        }
-//        return lastVisibleItemPosition;
-//    }
-//
-//    /**
-//     * 是否是底部
-//     *
-//     * @param lastVisibleItemPosition
-//     * @return
-//     */
-//    private boolean isBottom(int lastVisibleItemPosition) {
-//        LayoutManager layoutManager = getLayoutManager();
-//
-//        int itemCount = layoutManager.getItemCount();
-//        int childCount = layoutManager.getChildCount();
-//        return childCount > 0 && lastVisibleItemPosition >= itemCount - 1 && itemCount >= childCount;
-//    }
 
     private void onPointerUp(MotionEvent e) {
         final int actionIndex = MotionEventCompat.getActionIndex(e);
@@ -616,14 +597,7 @@ public class XRecyclerView extends RecyclerView {
         }
     };
 
-    private OnLoadMoreScrollListener mOnLoadMoreScrollListener = new OnLoadMoreScrollListener() {
-        @Override
-        public void onLoadMore(RecyclerView recyclerView) {
-            if (mOnLoadMoreListener != null && mStatus == STATUS_DEFAULT && isNotRefreshing()) {
-                mOnLoadMoreListener.onLoadMore();
-            }
-        }
-    };
+    private ScrollListener mOnLoadMoreScrollListener = new ScrollListener();
 
     private void setStatus(int status) {
         this.mStatus = status;
@@ -659,5 +633,59 @@ public class XRecyclerView extends RecyclerView {
                 break;
         }
         return statusLog;
+    }
+
+
+    /**
+     *
+     * @param recyclerView
+     * @return
+     */
+    private static boolean isBottom(RecyclerView recyclerView) {
+        if ( recyclerView.getChildCount() <= 2) {
+            return false;
+        }
+        // the last View is load more
+        View lastChild = recyclerView.getChildAt(recyclerView.getChildCount() - 1);
+        // the last position of real data
+        int position = recyclerView.getChildLayoutPosition(lastChild) - 1;
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        // 减去一个header, 一个 footer 的位置
+        int totalCount = layoutManager.getChildCount() - 2;
+        return totalCount <= position;
+    }
+
+    private boolean isFlingUp() {
+        return mDownY - mLastTouchY > 30 ;
+    }
+
+
+    private void doLoadMore() {
+        if ( mOnLoadMoreListener != null ) {
+            mOnLoadMoreListener.onLoadMore();
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    smoothScrollToPosition(mWrapperAdapter.getItemCount());
+                }
+            }, 30);
+        }
+    }
+    /**
+     *
+     */
+    private class ScrollListener extends OnScrollListener {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+            int visibleItemCount = layoutManager.getChildCount();
+
+            boolean triggerCondition = visibleItemCount > 0
+                    && newState == RecyclerView.SCROLL_STATE_IDLE;
+
+            if (triggerCondition && canLoadMore()) {
+                doLoadMore();
+            }
+        }
     }
 }
